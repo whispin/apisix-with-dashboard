@@ -88,7 +88,7 @@ services:
       - ./configs/apisix-config-init.sh:/apisix-config-init.sh
     depends_on:
       - apisix
-    entrypoint: /bin/sh -c "apk add --no-cache jq && /apisix-config-init.sh"
+    entrypoint: /bin/sh -c "apk add --no-cache jq && chmod +x /apisix-config-init.sh && /apisix-config-init.sh"
     restart: on-failure
     environment:
       APISIX_SERVICE_ADMIN_SECRET: edd1c9f034335f136f87ad84b625c8f1
