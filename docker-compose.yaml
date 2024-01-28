@@ -92,6 +92,8 @@ services:
     restart: on-failure
     environment:
       APISIX_SERVICE_ADMIN_SECRET: edd1c9f034335f136f87ad84b625c8f1
+    networks:
+      - apisix
 networks:
   apisix:
     driver: bridge
