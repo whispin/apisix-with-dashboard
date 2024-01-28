@@ -95,3 +95,6 @@ services:
 networks:
   apisix:
     driver: bridge
+
+volumes:
+  opa_backup:
