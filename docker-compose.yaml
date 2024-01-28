@@ -3,16 +3,14 @@ version: "3.8"
 services:
   broadcast_channel:
     image: redis:6.2-alpine
-    environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+    networks:
+      - apisix
   opal_server:
     image: permitio/opal-server:latest
     environment:
       - OPAL_BROADCAST_URI=redis://broadcast_channel:6379
       - UVICORN_NUM_WORKERS=4
-      - OPAL_POLICY_REPO_URL=https://gitlab.icos.city/opal/policy.git
+      - OPAL_POLICY_REPO_URL=https://github.com/permitio/opal-example-policy-repo
       - OPAL_POLICY_REPO_POLLING_INTERVAL=30
       - OPAL_DATA_CONFIG_SOURCES={"config":{"entries":[{"url":"http://opal_server:7002/policy-data","topics":["policy_data"],"dst_path":"/static"}]}}
       - OPAL_LOG_FORMAT_INCLUDE_PID=true
@@ -20,6 +18,8 @@ services:
       - "7002:7002"
     depends_on:
       - broadcast_channel
+    networks:
+      - apisix
   opal_client:
     image: permitio/opal-client:latest
     environment:
@@ -35,10 +35,14 @@ services:
     depends_on:
       - opal_server
     command: sh -c "exec ./wait-for.sh opal_server:7002 --timeout=20 -- ./start.sh"
+    networks:
+      - apisix
   whoami:
     image: traefik/whoami:v1.8.7
     ports:
       - 80
+    networks:
+      - apisix
   apisix:
     image: "apache/apisix"
     restart: always
